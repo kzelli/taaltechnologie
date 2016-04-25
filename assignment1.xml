@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<voorbeelden>
+  <vraag studentnummer="s2371502">
+    <string>Wie droeg de Nederlandse vlag tijdens de Olympische Spelen in 1964?</string>
+    <antwoord>
+      <string>Anton Geesink</string>
+      <locatie>http://nl.dbpedia.org/page/Anton_Geesink</locatie>
+    </antwoord>
+  </vraag>
+  <vraag studentnummer="s2371502">
+    <string>Tijdens welke Olympische Spelen won Nederland de meeste medailles?</string>
+    <antwoord>
+      <string>De Olympische_Zomerspelen in 2000 in Australië</string>
+      <locatie>http://nl.dbpedia.org/page/Nederland_op_de_Olympische_Zomerspelen_2000</locatie>
+    </antwoord>
+  </vraag>
+  <vraag studentnummer="s2371502">
+    <string>Wie zijn olympische kampioenen afkomstig uit Noord Korea?</string>
+    <antwoord>
+      <string>An Kum-ae</string>
+      <locatie>http://nl.dbpedia.org/page/Categorie:Noord-Koreaans_olympisch_kampioen</locatie>
+    </antwoord>
+    <antwoord>
+      <string>Om Yun-chol</string>
+      <locatie>http://nl.dbpedia.org/page/Categorie:Noord-Koreaans_olympisch_kampioen</locatie>
+    </antwoord>
+  </vraag>
+  <vraag studentnummer="s2371502">
+    <string>Wie won de zilveren medaille voor de rodelwedstrijd voor dubbels tijdens de Olympische Winterspelen in 2014?</string>
+    <antwoord>
+      <string>Andreas Linger</string>
+      <locatie>http://nl.dbpedia.org/page/Rodelen_op_de_Olympische_Winterspelen_2014_-_Dubbels</locatie>
+    </antwoord>
+    <antwoord>
+    <string>Wolfgang Linger</string>
+      <locatie>http://nl.dbpedia.org/page/Rodelen_op_de_Olympische_Winterspelen_2014_-_Dubbels</locatie>
+    </antwoord>
+  </vraag>
+  <vraag studentnummer="s2371502">
+    <string>Welke olympische gewichtheffer werd president van Nauru?</string>
+    <antwoord>
+      <string>Marcus Stephen</string>
+      <locatie>http://nl.dbpedia.org/page/Marcus_Stephen</locatie>
+    </antwoord>
+  </vraag>
+  <vraag studentnummer="s2371502">
+    <string>Hoe vaak heeft Kiribati ooit meegedaan aan de Olympische Spelen?</string>
+    <antwoord>
+      <string>3</string>
+      <locatie>http://nl.dbpedia.org/page/Categorie:Kiribati_op_de_Olympische_Spelen</locatie>
+    </antwoord>
+  </vraag>
+  <vraag studentnummer="s2371502">
+    <string>Hoeveel sporters uit Jamaica deden mee aan de Olympische Spelen in 2014?</string>
+    <antwoord>
+      <string>2</string>
+      <locatie>http://nl.dbpedia.org/page/Jamaica_op_de_Olympische_Winterspelen_2014</locatie>
+    </antwoord>
+  </vraag>
+  <vraag studentnummer="s2371502">
+    <string>Door wie werden de Olympische Spelen in 1936 geopend?</string>
+    <antwoord>
+      <string>Adolf Hitler</string>
+      <locatie>http://nl.dbpedia.org/page/Olympische_Zomerspelen_1936</locatie>
+    </antwoord>
+  </vraag>
+  <vraag studentnummer="s2371502">
+    <string>Wie opende de Olympische Spelen meer dan één keer?</string>
+    <antwoord>
+      <string>Elizabeth II</string>
+      <locatie>http://nl.dbpedia.org/page/Elizabeth_II_van_het_Verenigd_Koninkrijk</locatie>
+    </antwoord>
+  </vraag>
+  <vraag studentnummer="s2371502">
+    <string>Wanneer was korfbal een olympische sport?</string>
+    <antwoord>
+      <string>1920</string>
+      <locatie>http://nl.dbpedia.org/page/Categorie:Korfbal_op_de_Olympische_Spelen</locatie>
+    </antwoord>
+    <antwoord>
+      <string>1928</string>
+      <locatie>http://nl.dbpedia.org/page/Categorie:Korfbal_op_de_Olympische_Spelen</locatie>
+    </antwoord>
+  </vraag>
+</voorbeelden>
