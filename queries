@@ -1,0 +1,79 @@
+Resource = Usain Bolt.
+Thing = Olympische_Winterspelen_1994
+
+1. lengte
+
+SELECT ?lengte
+WHERE {
+<http://nl.dbpedia.org/resource/Usain_Bolt> <http://dbpedia.org/ontology/Person/height> ?lengte.
+}
+
+2. gewicht
+
+SELECT ?gewicht
+WHERE {
+<http://nl.dbpedia.org/resource/Usain_Bolt> <http://dbpedia.org/ontology/Person/weight> ?gewicht.
+}
+
+3. geboren datum
+
+SELECT ?geborendatum
+WHERE {
+<http://nl.dbpedia.org/resource/Usain_Bolt> <http://dbpedia.org/ontology/birthDate> ?geborendatum.
+}
+
+4. trainer
+
+SELECT ?trainer
+WHERE {
+<http://nl.dbpedia.org/resource/Usain_Bolt> <http://nl.dbpedia.org/property/trainer> ?trainer.
+}
+
+5. geboorteplaats
+
+
+SELECT ?geboorteplaats
+WHERE {
+<http://nl.dbpedia.org/resource/Usain_Bolt> <http://nl.dbpedia.org/property/geboorteplaats> ?geboorteplaats.
+}
+
+6. locatie
+
+
+SELECT ?locatie
+WHERE {
+<http://nl.dbpedia.org/resource/Olympische_Winterspelen_1994> <http://dbpedia.org/ontology/location> ?locatie.
+}
+
+
+7. datum opening
+
+
+SELECT ?opening
+WHERE {
+<http://nl.dbpedia.org/resource/Olympische_Winterspelen_1994> <http://dbpedia.org/ontology/startDate> ?opening.
+}
+
+8. datum sluiting
+
+
+SELECT ?sluiting
+WHERE {
+<http://nl.dbpedia.org/resource/Olympische_Winterspelen_1994> <http://dbpedia.org/ontology/endDate> ?sluiting.
+}
+
+9. nummer atleten
+
+
+SELECT ?nummeratleten
+WHERE {
+<http://nl.dbpedia.org/resource/Olympische_Winterspelen_1994> <http://dbpedia.org/ontology/numberOfParticipatingAthletes> ?nummeratleten.
+}
+
+10. nummer landen
+
+
+SELECT ?nummerlanden
+WHERE {
+<http://nl.dbpedia.org/resource/Olympische_Winterspelen_1994> <http://dbpedia.org/ontology/numberOfParticipatingNations> ?nummerlanden.
+}
