@@ -15,6 +15,9 @@ def create_and_fire_query(line):
 	propX = find_prop(line)
 	conceptY = find_concept(line)
 
+	print(propX)
+	print(conceptY)
+
 def find_prop(line):
 	line = line.split()
 	if line[2] in lidwoorden:
@@ -32,14 +35,16 @@ def find_concept(line):
 	concept = concept.replace("de", "")
 	concept = concept.replace("het", "")
 	concept = concept.strip()
-	print(concept)
+	page = ["url", 0]
 
 	for pair in open("pairCounts"):
 		if str(concept) in pair:
-			print(pair)
 			pair = pair.split('\t')
-			concept_Y = (pair[1])
-			print(concept_Y)
+			if int(pair[2]) > page[1]:
+				page[0] = pair[1]
+				page[1] = int(pair[2])
+	conceptY = page[0]
+	return(conceptY)
 
 #def create_and_fire_query(line):
 
