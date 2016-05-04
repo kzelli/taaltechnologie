@@ -12,6 +12,7 @@ def print_example_queries():
 	print("Wie is de trainer van Usain Bolt?")
 
 def create_and_fire_query(line):
+	print("Je vraag is: ", line)
 	propX = find_prop(line)
 	conceptY = find_concept(line)
 	print(propX)
@@ -56,7 +57,7 @@ def find_concept(line):
 	return(conceptY)
 
 def query(propX, conceptY):
-	#possible properties
+	##possible properties
 	#persons
 	lengte = ["lengte", "hoogte"]
 	gewicht = ["gewicht", "zwaarte", "kilogram"]
@@ -70,15 +71,19 @@ def query(propX, conceptY):
 	vakkeldrager = ["fakkeldrager", "fakkelman", "fakkelvrouw"]
 	opener = ["opener", "openingsmeester", "openingspersoon"]
 
+	#queries for specific properties
+
 	if propX in gewicht:
-		answer =function("""SELECT ?gewicht
+		answer = function("""SELECT ?gewicht
 				WHERE {
-				<http://nl.dbpedia.org/resource/Usain_Bolt> <http://dbpedia.org/ontology/Person/weight> ?gewicht.
-				}""")
+				<resource_url> <http://dbpedia.org/ontology/Person/weight> ?gewicht.
+				}""", conceptY)
 		return(answer)
 
-def function(sparql_query):
+
+def function(sparql_query, conceptY):
     sparql = SPARQLWrapper("http://nl.dbpedia.org/sparql")
+    sparql_query = sparql_query.replace("resource_url", conceptY)
     sparql.setQuery(sparql_query)
 
     sparql.setReturnFormat(JSON)
