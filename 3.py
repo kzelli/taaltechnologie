@@ -17,7 +17,9 @@ def create_and_fire_query(line):
 	conceptY = find_concept(line)
 	print(propX)
 	print(conceptY)
-	answer = query(propX, conceptY)	
+	answer = query(propX, conceptY)
+	# remove link if needed for user
+	answer = answer.replace("http://nl.dbpedia.org/resource/", "")
 	return(answer)
 
 def find_prop(line):
@@ -66,12 +68,19 @@ def query(propX, conceptY):
 	geboorteplaats = ["geboorteplaats", "geboortestad", "geboorteplek"]
 	#games
 	locatie = ["locatie", "plaats", "plek"]
-	datumopening = ["opening", "openingsdatum", "start"]
+	datumopening = ["opening", "openingsdatum", "start", "startdatum"]
 	datumsluiting = ["sluiting", "sluitingsdatum", "slot"]
 	vakkeldrager = ["fakkeldrager", "fakkelman", "fakkelvrouw"]
 	opener = ["opener", "openingsmeester", "openingspersoon"]
 
 	#queries for specific properties
+
+	if propX in lengte:
+		answer = function("""SELECT ?lengte
+				WHERE {
+				<resource_url> <http://dbpedia.org/ontology/Person/height> ?lengte.
+				}""", conceptY)
+		return(answer)
 
 	if propX in gewicht:
 		answer = function("""SELECT ?gewicht
@@ -79,6 +88,68 @@ def query(propX, conceptY):
 				<resource_url> <http://dbpedia.org/ontology/Person/weight> ?gewicht.
 				}""", conceptY)
 		return(answer)
+
+	if propX in geboorte:
+		answer = function("""SELECT ?geboorte
+				WHERE {
+				<resource_url> <http://dbpedia.org/ontology/birthPlace> ?geboorte.
+				}""", conceptY)
+		return(answer)
+
+	if propX in trainer:
+		answer = function("""SELECT ?trainer
+				WHERE {
+				<resource_url> <http://nl.dbpedia.org/property/trainer> ?trainer.
+				}""", conceptY)
+		return(answer)
+
+	if propX in geboorteplaats:
+		answer = function("""SELECT ?geboorteplaats
+				WHERE {
+				<resource_url> <http://nl.dbpedia.org/property/geboorteplaats> ?geboorteplaats.
+				}""", conceptY)
+		return(answer)
+	
+	if propX in locatie:
+		answer = function("""SELECT ?locatie
+				WHERE {
+				<resource_url> <http://nl.dbpedia.org/property/plaats> ?locatie.
+				}""", conceptY)
+		return(answer)
+
+	if propX in datumopening:
+		answer = function("""SELECT ?opening
+				WHERE {
+				<resource_url> <http://nl.dbpedia.org/property/opening> ?opening.
+				}""", conceptY)
+		return(answer)
+
+	if propX in datumsluiting:
+		answer = function("""SELECT ?sluiting
+				WHERE {
+				<resource_url> <http://nl.dbpedia.org/property/sluiting> ?sluiting.
+				}""", conceptY)
+		return(answer)
+
+	if propX in vakkeldrager:
+		answer = function("""SELECT ?vakkeldrager
+				WHERE {
+				<resource_url> <http://dbpedia.org/ontology/torchBearer> ?vakkeldrager.
+				}""", conceptY)
+		return(answer)
+
+	if propX in opener:
+		answer = function("""SELECT ?opener
+				WHERE {
+				<resource_url> <http://nl.dbpedia.org/property/opener> ?opener.
+				}""", conceptY)
+		return(answer)
+
+
+
+
+	
+
 
 
 def function(sparql_query, conceptY):
