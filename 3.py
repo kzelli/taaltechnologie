@@ -6,21 +6,43 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 lidwoorden = ["de", "het", "een"]
 
 def print_example_queries():
-	print("Wat is de startdatum van de Olympische Spelen 2012?")
-	print("Wat is de plaats van de Olympische Zomerspelen 2008?")
+	#examples of queries that are possible with this program
+	print("Dit programma kan diverse vragen beantwoorden. \n")
+	print("Mogelijke vragen over personen: \n")
 	print("Wat is de lengte van Usain Bolt?")
+	print("Wat is het gewicht van Usain Bolt?")
+	print("Wat is de geboortedatum van Usain Bolt?")
 	print("Wie is de trainer van Usain Bolt?")
+	print("Wat is de geboorteplaats van Usain Bolt? \n")
+	print("Mogelijke vragen over gebeurtenissen: \n")
+	print("Wat is de locatie van de Olympische Zomerspelen 2012?")
+	print("Wat is de startdatum van de Olympische Spelen 2012?")
+	print("Wat is de sluitingsdatum van de Olympische Spelen 2012?")
+	print("Wie is de fakkeldrager van de Olympische Spelen 2012?")
+	print("Wie is de openingsmeester van de Olympische Spelen 2012? \n \n")
 
 def create_and_fire_query(line):
+	#repeat question to user
 	print("Je vraag is: ", line)
+
+	#find property
 	propX = find_prop(line)
+
+	#find concept
 	conceptY = find_concept(line)
-	print(propX)
-	print(conceptY)
+
+	#get answer from query
 	answer = query(propX, conceptY)
-	# remove link if needed for user
+
+	#remove link and _ if needed for better output to user
 	answer = answer.replace("http://nl.dbpedia.org/resource/", "")
-	return(answer)
+	answer = answer.replace("_", " ")
+	#remove _ and link of concept for nicer output to user
+	conceptY = conceptY.replace("http://nl.dbpedia.org/resource/", "")
+	conceptY = conceptY.replace("_", " ")
+
+
+	return(propX, conceptY, answer)
 
 def find_prop(line):
 	##ad-hoc: only works when prop is one word and on 3rd position in sentence
@@ -66,11 +88,11 @@ def query(propX, conceptY):
 	geboorte = ["geboortedatum", "geboorte"]
 	trainer = ["trainer", "coach", "meester"]
 	geboorteplaats = ["geboorteplaats", "geboortestad", "geboorteplek"]
-	#games
+	#events
 	locatie = ["locatie", "plaats", "plek"]
 	datumopening = ["opening", "openingsdatum", "start", "startdatum"]
 	datumsluiting = ["sluiting", "sluitingsdatum", "slot"]
-	vakkeldrager = ["fakkeldrager", "fakkelman", "fakkelvrouw"]
+	fakkeldrager = ["fakkeldrager", "fakkelman", "fakkelvrouw"]
 	opener = ["opener", "openingsmeester", "openingspersoon"]
 
 	#queries for specific properties
@@ -92,7 +114,7 @@ def query(propX, conceptY):
 	if propX in geboorte:
 		answer = function("""SELECT ?geboorte
 				WHERE {
-				<resource_url> <http://dbpedia.org/ontology/birthPlace> ?geboorte.
+				<resource_url> <http://nl.dbpedia.org/property/geboortedatum> ?geboorte.
 				}""", conceptY)
 		return(answer)
 
@@ -131,10 +153,10 @@ def query(propX, conceptY):
 				}""", conceptY)
 		return(answer)
 
-	if propX in vakkeldrager:
-		answer = function("""SELECT ?vakkeldrager
+	if propX in fakkeldrager:
+		answer = function("""SELECT ?fakkeldrager
 				WHERE {
-				<resource_url> <http://dbpedia.org/ontology/torchBearer> ?vakkeldrager.
+				<resource_url> <http://dbpedia.org/ontology/torchBearer> ?fakkeldrager.
 				}""", conceptY)
 		return(answer)
 
@@ -145,14 +167,8 @@ def query(propX, conceptY):
 				}""", conceptY)
 		return(answer)
 
-
-
-
-	
-
-
-
 def function(sparql_query, conceptY):
+	#SPARQL query based on lecture slides
     sparql = SPARQLWrapper("http://nl.dbpedia.org/sparql")
     sparql_query = sparql_query.replace("resource_url", conceptY)
     sparql.setQuery(sparql_query)
@@ -167,10 +183,19 @@ def function(sparql_query, conceptY):
 def main(argv):
 	print_example_queries()
 	for line in sys.stdin:
-		#haalt whitespace aan het einde van line weg
+		#remove whitspace at end of line
 		line = line.rstrip()
-		answer = create_and_fire_query(line)
-		print(answer)
+
+		#get the property and the concept of the question and the answer to the question based on query
+		propX, conceptY, answer = create_and_fire_query(line)
+
+		#communicate failure to user if no answer is found
+		if answer == None:
+			print("Helaas is geen antwoord gevonden.")
+
+		#communicate answer to user in readable format
+		else:
+			print(propX, "van", conceptY, "is", answer)
 
 if __name__ == "__main__":
 	main(sys.argv)
