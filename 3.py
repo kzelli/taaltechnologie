@@ -35,11 +35,13 @@ def create_and_fire_query(line):
 	answer = query(propX, conceptY)
 
 	#remove link and _ if needed for better output to user
-	answer = answer.replace("http://nl.dbpedia.org/resource/", "")
-	answer = answer.replace("_", " ")
+	if answer != None:
+		answer = answer.replace("http://nl.dbpedia.org/resource/", "")
+		answer = answer.replace("_", " ")
 	#remove _ and link of concept for nicer output to user
-	conceptY = conceptY.replace("http://nl.dbpedia.org/resource/", "")
-	conceptY = conceptY.replace("_", " ")
+	if conceptY != None:
+		conceptY = conceptY.replace("http://nl.dbpedia.org/resource/", "")
+		conceptY = conceptY.replace("_", " ")
 
 
 	return(propX, conceptY, answer)
