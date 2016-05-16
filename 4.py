@@ -1,6 +1,7 @@
 import socket
 import sys
 from lxml import etree
+from collections import OrderedDict
 
 # parse input sentence and return alpino output as an xml element tree
 def alpino_parse(sent, host='zardoz.service.rug.nl', port=42424):
@@ -19,12 +20,24 @@ def alpino_parse(sent, host='zardoz.service.rug.nl', port=42424):
 	xml = etree.fromstring(bytes_received)
 	return xml
 
-def main():
-	xml = alpino_parse("Wie schreef 'You mistreat me'?")
+def tree_yield(xml):
+    leaves = xml.xpath('descendant-or-self::node[@word]')
+    dic = OrderedDict()
+    words = []
+    for l in leaves:
+        pos = l.attrib["pos"]
+        word = l.attrib["word"]
+        dic[pos] = word
+    return dic
 
-	names = xml.xpath('//node[@spectype="deeleigen"]') 
-	for name in names:
-		print(name.attrib["word"])
+
+
+def main():
+	xml = alpino_parse("Door wie is de geboorteplaats van Usain Bolt?")
+	print(xml)
+	result = (tree_yield(xml))
+	print(result)
+	print(result['pron'])
 
 
 main()
