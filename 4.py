@@ -1,7 +1,24 @@
 import socket
 import sys
+from SPARQLWrapper import SPARQLWrapper, JSON
+import sys
 from lxml import etree
-from collections import OrderedDict
+
+def print_example_queries():
+	#examples of queries that are possible with this program
+	print("Dit programma kan diverse vragen beantwoorden. \n")
+	print("Mogelijke vragen over personen: \n")
+	print("Wat is de lengte van Usain Bolt?")
+	print("Wat is het gewicht van Usain Bolt?")
+	print("Wat is de geboortedatum van Usain Bolt?")
+	print("Wie is de trainer van Usain Bolt?")
+	print("Wat is de geboorteplaats van Usain Bolt? \n")
+	print("Mogelijke vragen over gebeurtenissen: \n")
+	print("Wat is de locatie van de Olympische Zomerspelen 2012?")
+	print("Wat is de startdatum van de Olympische Spelen 2012?")
+	print("Wat is de sluitingsdatum van de Olympische Spelen 2012?")
+	print("Wie is de fakkeldrager van de Olympische Spelen 2012?")
+	print("Wie is de openingsmeester van de Olympische Spelen 2012? \n \n")
 
 # parse input sentence and return alpino output as an xml element tree
 def alpino_parse(sent, host='zardoz.service.rug.nl', port=42424):
@@ -20,24 +37,256 @@ def alpino_parse(sent, host='zardoz.service.rug.nl', port=42424):
 	xml = etree.fromstring(bytes_received)
 	return xml
 
-def tree_yield(xml):
+def tree_yieldprop(xml):
     leaves = xml.xpath('descendant-or-self::node[@word]')
-    dic = OrderedDict()
     words = []
     for l in leaves:
-        pos = l.attrib["pos"]
-        word = l.attrib["word"]
-        dic[pos] = word
-    return dic
+    	posword = []
+    	posword.append(l.attrib["pos"])
+    	posword.append((l.attrib["word"]).lower())
+    	posword.append(l.attrib["rel"])
+    	if posword[0] == "verb":
+    		posword.append(l.attrib["lemma"])
+    	words.append(posword)
+    return words
+
+def find_prop(parsed_question):
+	for word in parsed_question:
+		if "whd" in word:
+			if "wie" in word:
+				return(person_question(parsed_question))
+			elif "wat" in word:
+				return(object_question(parsed_question))
+			elif "wanneer" in word:
+				return(time_question(parsed_question))
+		elif "adj" in word:
+			if "hoeveel" in word:
+				return(number_question(parsed_question))
+
+def person_question(parsed_question):
+	print("persoon")
+	for word in parsed_question:
+		if "hd" in word:
+			if "noun" in word:
+				propX = word[1]
+				return(propX)
+
+def object_question(parsed_question):
+	print("eigenschap")
+	for word in parsed_question:
+		if "hd" in word:
+			if "noun" in word:
+				propX = word[1]
+				print(propX)
+				return(propX)
+
+def time_question(parsed_question):
+	opening = ["openen", "beginnen"]
+	sluiting = ["sluiten", "aflopen", "eindigen"]
+	print("datum")
+	for word in parsed_question:
+		if "geboren" in word:
+			propX = "geboorte"
+			return(propX)
+		for prop in opening:
+			if prop in word:
+				propX = "opening"
+				return(propX)
+		for prop in sluiting:
+			if prop in word:
+				propX = "sluiting"
+				return(propX)
+
+
+def number_question(parsed_question):
+	print("nummer")
+	for word in parsed_question:
+		if "atleten" in word:
+			propX = "nummeratleten"
+			return(propX)
+		if "landen" in word:
+			propX = "nummerlanden"
+			return(propX)
+
+
+def find_concept(parsed_question):
+	print("bernie")
+	conceptlist = []
+	concept = None
+
+	for word in parsed_question:
+		if "mwp" in word:
+			conceptlist.append(word[1].capitalize())
+			concept = ' '.join(conceptlist)
+	
+	if concept == None:
+		print("The program could not found a relevant concept to answer the question.")
+		return(None)
+
+	page = ["url", 0]
+	for pair in open("pairCounts"):
+		if str(concept) in pair:
+			pair = pair.split('\t')
+			#sort by frequency
+			if int(pair[2]) > page[1]:
+				page[0] = pair[1]
+				page[1] = int(pair[2])
+
+	#return concept url with highest frequency			
+	conceptY = page[0]
+	print(conceptY)
+	return(conceptY)
+
+def query(propX, conceptY):
+	print(propX)
+	print(conceptY)
+	##possible properties
+	#persons
+	lengte = ["lengte", "hoogte"]
+	gewicht = ["gewicht", "zwaarte", "kilogram"]
+	geboorte = ["geboortedatum", "geboorte"]
+	trainer = ["trainer", "coach", "meester"]
+	geboorteplaats = ["geboorteplaats", "geboortestad", "geboorteplek"]
+	#events
+	locatie = ["locatie", "plaats", "plek"]
+	datumopening = ["opening", "openingsdatum", "start", "startdatum"]
+	datumsluiting = ["sluiting", "sluitingsdatum", "slot"]
+	fakkeldrager = ["fakkeldrager", "fakkelman", "fakkelvrouw"]
+	opener = ["opener", "openingsmeester", "openingspersoon"]
+	#time
+	tijd = ["tijd"]
+	#number
+	atleten = ["nummeratleten"]
+	landen = ["nummerlanden"]
+
+	#queries for specific properties
+
+	if propX in lengte:
+		answer = function("""SELECT ?lengte
+				WHERE {
+				<resource_url> <http://dbpedia.org/ontology/Person/height> ?lengte.
+				}""", conceptY)
+		return(answer)
+
+	if propX in gewicht:
+		answer = function("""SELECT ?gewicht
+				WHERE {
+				<resource_url> <http://dbpedia.org/ontology/Person/weight> ?gewicht.
+				}""", conceptY)
+		return(answer)
+
+	if propX in geboorte:
+		answer = function("""SELECT ?geboorte
+				WHERE {
+				<resource_url> <http://nl.dbpedia.org/property/geboortedatum> ?geboorte.
+				}""", conceptY)
+		return(answer)
+
+	if propX in trainer:
+		answer = function("""SELECT ?trainer
+				WHERE {
+				<resource_url> <http://nl.dbpedia.org/property/trainer> ?trainer.
+				}""", conceptY)
+		return(answer)
+
+	if propX in geboorteplaats:
+		answer = function("""SELECT ?geboorteplaats
+				WHERE {
+				<resource_url> <http://nl.dbpedia.org/property/geboorteplaats> ?geboorteplaats.
+				}""", conceptY)
+		return(answer)
+	
+	if propX in locatie:
+		answer = function("""SELECT ?locatie
+				WHERE {
+				<resource_url> <http://nl.dbpedia.org/property/plaats> ?locatie.
+				}""", conceptY)
+		return(answer)
+
+	if propX in datumopening:
+		answer = function("""SELECT ?opening
+				WHERE {
+				<resource_url> <http://nl.dbpedia.org/property/opening> ?opening.
+				}""", conceptY)
+		return(answer)
+
+	if propX in datumsluiting:
+		answer = function("""SELECT ?sluiting
+				WHERE {
+				<resource_url> <http://nl.dbpedia.org/property/sluiting> ?sluiting.
+				}""", conceptY)
+		return(answer)
+
+	if propX in fakkeldrager:
+		answer = function("""SELECT ?fakkeldrager
+				WHERE {
+				<resource_url> <http://dbpedia.org/ontology/torchBearer> ?fakkeldrager.
+				}""", conceptY)
+		return(answer)
+
+	if propX in opener:
+		answer = function("""SELECT ?opener
+				WHERE {
+				<resource_url> <http://nl.dbpedia.org/property/opener> ?opener.
+				}""", conceptY)
+		return(answer)
+	
+	if propX in tijd:
+		answer = function("""SELECT ?tijd
+				WHERE {
+				<resource_url> <http://nl.dbpedia.org/property/jaar> ?tijd.
+				}""", conceptY)
+		return(answer)
+
+	if propX in atleten:
+		answer = function("""SELECT ?tijd
+				WHERE {
+				<resource_url> <http://dbpedia.org/ontology/numberOfParticipatingAthletes> ?tijd.
+				}""", conceptY)
+		return(answer)
+
+	if propX in landen:
+		answer = function("""SELECT ?tijd
+				WHERE {
+				<resource_url> <http://dbpedia.org/ontology/numberOfParticipatingNations> ?tijd.
+				}""", conceptY)
+		return(answer)
 
 
 
-def main():
-	xml = alpino_parse("Door wie is de geboorteplaats van Usain Bolt?")
-	print(xml)
-	result = (tree_yield(xml))
+def function(sparql_query, conceptY):
+	#SPARQL query based on lecture slides
+    sparql = SPARQLWrapper("http://nl.dbpedia.org/sparql")
+    sparql_query = sparql_query.replace("resource_url", conceptY)
+    sparql.setQuery(sparql_query)
+
+    sparql.setReturnFormat(JSON)
+    results = sparql.query().convert()
+    for result in results["results"]["bindings"]:
+        for arg in result :
+            answer = result[arg]["value"]
+            return(answer)
+
+
+def create_and_fire_query(line):
+	xml = alpino_parse(line)
+	result = (tree_yieldprop(xml))
 	print(result)
-	print(result['pron'])
+	conceptY = find_concept(result)
+	propX = find_prop(result)
+	return(query(propX, conceptY))
 
+def main(argv):
+	print_example_queries()
+	for line in sys.stdin:
+		#remove whitspace at end of line
+		line = line.rstrip()
 
-main()
+		#get the property and the concept of the question and the answer to the question based on query
+		answer = create_and_fire_query(line)
+
+		#communicate failure to user if no answer is found
+		print(answer)
+
+if __name__ == "__main__":
+	main(sys.argv)
