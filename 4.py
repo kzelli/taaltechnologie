@@ -10,15 +10,15 @@ def print_example_queries():
 	print("Mogelijke vragen over personen: \n")
 	print("Wat is de lengte van Usain Bolt?")
 	print("Wat is het gewicht van Usain Bolt?")
-	print("Wat is de geboortedatum van Usain Bolt?")
-	print("Wie is de trainer van Usain Bolt?")
-	print("Wat is de geboorteplaats van Usain Bolt? \n")
+	print("Wanneer is Usain Bolt geboren?")
+	print("Waar is Usain Bolt geboren?")
+	print("Wie is de trainer van Usain Bolt? \n")
 	print("Mogelijke vragen over gebeurtenissen: \n")
-	print("Wat is de locatie van de Olympische Zomerspelen 2012?")
-	print("Wat is de startdatum van de Olympische Spelen 2012?")
-	print("Wat is de sluitingsdatum van de Olympische Spelen 2012?")
-	print("Wie is de fakkeldrager van de Olympische Spelen 2012?")
-	print("Wie is de openingsmeester van de Olympische Spelen 2012? \n \n")
+	print("Waar waren de Olympische Zomerspelen 2008?")
+	print("Wat is de startdatum van de Olympische Spelen 2008?")
+	print("Wanneer sloten de Olympische Spelen 2008?")
+	print("Hoeveel landen deden mee aan de Olympische Spelen 2008?")
+	print("Hoeveel atleten deden mee aan de Olympische Spelen 2008? \n \n")
 
 # parse input sentence and return alpino output as an xml element tree
 def alpino_parse(sent, host='zardoz.service.rug.nl', port=42424):
@@ -38,6 +38,7 @@ def alpino_parse(sent, host='zardoz.service.rug.nl', port=42424):
 	return xml
 
 def tree_yieldprop(xml):
+	# gets several attributes from nodes in sentence 
     leaves = xml.xpath('descendant-or-self::node[@word]')
     words = []
     for l in leaves:
@@ -45,12 +46,14 @@ def tree_yieldprop(xml):
     	posword.append(l.attrib["pos"])
     	posword.append((l.attrib["word"]).lower())
     	posword.append(l.attrib["rel"])
+    	# add the infinitve of a verb
     	if posword[0] == "verb":
     		posword.append(l.attrib["lemma"])
     	words.append(posword)
     return words
 
 def find_prop(parsed_question):
+	# find sort prop based on question type
 	for word in parsed_question:
 		if "whd" in word:
 			if "wie" in word:
@@ -59,12 +62,14 @@ def find_prop(parsed_question):
 				return(object_question(parsed_question))
 			elif "wanneer" in word:
 				return(time_question(parsed_question))
+			elif "waar" in word:
+				return(location_question(parsed_question))
 		elif "adj" in word:
 			if "hoeveel" in word:
 				return(number_question(parsed_question))
 
 def person_question(parsed_question):
-	print("persoon")
+	# props based on persons
 	for word in parsed_question:
 		if "hd" in word:
 			if "noun" in word:
@@ -72,18 +77,17 @@ def person_question(parsed_question):
 				return(propX)
 
 def object_question(parsed_question):
-	print("eigenschap")
+	# props based on data about persons
 	for word in parsed_question:
 		if "hd" in word:
 			if "noun" in word:
 				propX = word[1]
-				print(propX)
 				return(propX)
 
 def time_question(parsed_question):
+	# props about time and dates
 	opening = ["openen", "beginnen"]
 	sluiting = ["sluiten", "aflopen", "eindigen"]
-	print("datum")
 	for word in parsed_question:
 		if "geboren" in word:
 			propX = "geboorte"
@@ -97,9 +101,18 @@ def time_question(parsed_question):
 				propX = "sluiting"
 				return(propX)
 
+def location_question(parsed_question):
+	# props about location
+	for word in parsed_question:
+		if "geboren" in word:
+			propX = "geboorteplaats"
+			return(propX)
+
+	propX = "locatie"
+	return(propX)
 
 def number_question(parsed_question):
-	print("nummer")
+	# props about amount or numbers
 	for word in parsed_question:
 		if "atleten" in word:
 			propX = "nummeratleten"
@@ -110,7 +123,7 @@ def number_question(parsed_question):
 
 
 def find_concept(parsed_question):
-	print("bernie")
+	# find the concept based on "mwp" pos
 	conceptlist = []
 	concept = None
 
@@ -134,12 +147,9 @@ def find_concept(parsed_question):
 
 	#return concept url with highest frequency			
 	conceptY = page[0]
-	print(conceptY)
 	return(conceptY)
 
 def query(propX, conceptY):
-	print(propX)
-	print(conceptY)
 	##possible properties
 	#persons
 	lengte = ["lengte", "hoogte"]
@@ -199,7 +209,7 @@ def query(propX, conceptY):
 	if propX in locatie:
 		answer = function("""SELECT ?locatie
 				WHERE {
-				<resource_url> <http://nl.dbpedia.org/property/plaats> ?locatie.
+				<resource_url> <http://dbpedia.org/ontology/location> ?locatie.
 				}""", conceptY)
 		return(answer)
 
@@ -239,16 +249,16 @@ def query(propX, conceptY):
 		return(answer)
 
 	if propX in atleten:
-		answer = function("""SELECT ?tijd
+		answer = function("""SELECT ?atleten
 				WHERE {
-				<resource_url> <http://dbpedia.org/ontology/numberOfParticipatingAthletes> ?tijd.
+				<resource_url> <http://dbpedia.org/ontology/numberOfParticipatingAthletes> ?atleten.
 				}""", conceptY)
 		return(answer)
 
 	if propX in landen:
-		answer = function("""SELECT ?tijd
+		answer = function("""SELECT ?landen
 				WHERE {
-				<resource_url> <http://dbpedia.org/ontology/numberOfParticipatingNations> ?tijd.
+				<resource_url> <http://dbpedia.org/ontology/numberOfParticipatingNations> ?landen.
 				}""", conceptY)
 		return(answer)
 
@@ -271,7 +281,7 @@ def function(sparql_query, conceptY):
 def create_and_fire_query(line):
 	xml = alpino_parse(line)
 	result = (tree_yieldprop(xml))
-	print(result)
+	#print(result)
 	conceptY = find_concept(result)
 	propX = find_prop(result)
 	return(query(propX, conceptY))
@@ -285,7 +295,6 @@ def main(argv):
 		#get the property and the concept of the question and the answer to the question based on query
 		answer = create_and_fire_query(line)
 
-		#communicate failure to user if no answer is found
 		print(answer)
 
 if __name__ == "__main__":
